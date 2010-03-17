@@ -15,7 +15,8 @@ the class level.
 
 For example:
 
-    class UpdateNetworkGraph < Resque::Jobs::Locked
+    class UpdateNetworkGraph
+      extend Resque::Jobs::Locked
       def self.perform_internal(repo_id)
         heavy_lifting
       end
@@ -46,12 +47,14 @@ combination of its class name and arguments.
 Retried jobs
 ------------
 
+### Locks
+
 Normally, locked jobs simply abort when a lock is encountered. If you'd like
 the job to try again when the lock is lifted, extend RetryOnLock.
 
 For example:
 
-    class UpdateNetworkGraph < Resque::Jobs::Locked
+    class UpdateNetworkGraph
       extend Resque::Jobs::RetryOnLock
       def self.perform_internal(repo_id)
         heavy_lifting
@@ -61,6 +64,35 @@ For example:
 Now, if the job encounters a lock, the job will be requeued to try again after
 a short delay.
 
+### Failures
+
+If you'd like to retry jobs when certain exceptions happen, use RetryOnFail.
+Then, define the types of exceptions that are ok to retry on.
+
+For example:
+
+    class UpdateNetworkGraph
+      extend Resque::Jobs::RetryOnFail
+      def self.perform_internal(repo_id)
+        heavy_lifting
+      end
+      def self.retried_exceptions
+        [NetworkError]
+      end
+    end
+
+Now, if a NetworkError (or subclass) exception is thrown while performing the
+job, it will be required after a short delay.
+
+### Bonus
+
+Retries may be combined. For example:
+
+    class UpdateNetworkGraph
+      extend Resque::Jobs::RetryOnLock
+      extend Resque::Jobs::RetryOnFail
+      ...
+    end
 
 Contributing
 ------------

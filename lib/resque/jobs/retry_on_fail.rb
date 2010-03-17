@@ -1,5 +1,9 @@
 module Resque
   module Jobs
+
+    # If you want your job to retry when an exception is encountered, just
+    # extend this module. Override +retried_exceptions+ to return an array
+    # of the exceptions that are ok to retry on. There are no defaults.
     module RetryOnFail
       include Retried
 
