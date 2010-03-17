@@ -41,3 +41,34 @@ puts "Starting redis for testing at localhost:9736..."
 `redis-server #{dir}/redis-test.conf`
 Resque.redis = 'localhost:9736'
 
+
+#
+# Job classes for testing
+#
+
+class SelfLockJob < ::Resque::Jobs::Locked
+  def self.perform_without_lock(sleep_time)
+    sleep sleep_time
+  end
+end
+
+class LockedJob < ::Resque::Jobs::Locked
+  def self.perform_without_lock(sleep_time)
+    sleep sleep_time
+  end
+  def self.lock(*args)
+    "TestLock"
+  end
+end
+
+class ExecutionExpiresJob < ::Resque::Jobs::Locked
+  def self.perform_without_lock(sleep_time)
+    sleep sleep_time
+  end
+  def self.lock(*args)
+    "TestLock"
+  end
+  def self.lock_time
+    1
+  end
+end
