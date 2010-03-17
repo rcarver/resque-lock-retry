@@ -15,15 +15,22 @@ Gem::Specification.new do |s|
     "README.markdown"
   ]
   s.files = [
-    "README.markdown",
+    ".gitignore",
+     "README.markdown",
      "Rakefile",
      "VERSION",
      "lib/resque-lock-retry.rb",
      "lib/resque/jobs/locked.rb",
+     "lib/resque/jobs/perform_internal.rb",
      "lib/resque/jobs/retried.rb",
+     "lib/resque/jobs/retry_on_fail.rb",
+     "lib/resque/jobs/retry_on_lock.rb",
+     "resque-lock-retry.gemspec",
+     "test/combined_test.rb",
      "test/locked_test.rb",
      "test/redis-test.conf",
-     "test/retried_test.rb",
+     "test/retry_on_fail_test.rb",
+     "test/retry_on_lock_test.rb",
      "test/test_helper.rb"
   ]
   s.homepage = %q{http://github.com/rcarver/resque-lock-retry}
@@ -32,8 +39,10 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{Adds lockable and retryable jobs to Resque.}
   s.test_files = [
-    "test/locked_test.rb",
-     "test/retried_test.rb",
+    "test/combined_test.rb",
+     "test/locked_test.rb",
+     "test/retry_on_fail_test.rb",
+     "test/retry_on_lock_test.rb",
      "test/test_helper.rb"
   ]
 

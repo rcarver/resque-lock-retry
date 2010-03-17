@@ -7,6 +7,12 @@ module Resque
     module RetryOnFail
       include Retried
 
+      # Convenience method to test whether your class will retry on a given
+      # exception type.
+      def retried_on_exception?(ex)
+        retried_exceptions.any? { |e| ex.is_a?(e) }
+      end
+
       # Override in your subclass to control how long to wait before
       # re-queueing the job when a lock is encountered. Note that the job will
       # block other jobs while this wait occurs. Return nil to perform no
@@ -21,7 +27,7 @@ module Resque
         begin
           super
         rescue Exception => ex
-          try_again(*args) if retried_exceptions.any? { |e| ex.is_a?(e) }
+          try_again(*args) if retried_on_exception?(ex)
           raise
         end
       end
