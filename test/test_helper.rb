@@ -93,3 +93,38 @@ class RetriedOnLockJob < ::Resque::Jobs::Locked
     "TestLock"
   end
 end
+
+FooError = Class.new(StandardError)
+ExtraFooError = Class.new(FooError)
+BarError = Class.new(StandardError)
+
+class RetriedOnFailJob < ::Resque::Jobs::Locked
+  extend ::Resque::Jobs::RetryOnFail
+  @queue = :testqueue
+  def self.perform_without_lock(sleep_time, ex)
+    sleep sleep_time
+    raise ex
+  end
+  def self.retried_exceptions
+    [FooError, BarError]
+  end
+  def self.lock(*args)
+    "TestLock"
+  end
+end
+
+class RetriedOnLockAndFail < ::Resque::Jobs::Locked
+  extend ::Resque::Jobs::RetryOnLock
+  extend ::Resque::Jobs::RetryOnFail
+  @queue = :testqueue
+  def self.perform_without_lock(sleep_time, ex)
+    sleep sleep_time
+    raise ex
+  end
+  def self.retried_exceptions
+    [FooError, BarError]
+  end
+  def self.lock(*args)
+    "TestLock"
+  end
+end
