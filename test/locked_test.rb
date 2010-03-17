@@ -31,6 +31,17 @@ class Resque::LockedJobTest < Test::Unit::TestCase
     thread.join
   end
 
+  def test_lock_is_removed_when_job_fails
+    thread = Thread.new { FailJob.perform 1 }
+    assert_equal(true, Resque.redis.exists("locked:TestLock"), "job set the lock")
+    begin
+      thread.join
+    rescue StandardError => e
+      assert_equal("oh no", e.message, "job threw an exception")
+    end
+    assert_equal(false, Resque.redis.exists("locked:TestLock"), "job cleared the lock")
+  end
+
   def test_job_name_and_args_are_default_lock
     thread = Thread.new { SelfLockJob.perform(1) }
     assert_equal(true, Resque.redis.exists("locked:SelfLockJob-1"), "job set the lock")

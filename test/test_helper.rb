@@ -61,6 +61,16 @@ class LockedJob < ::Resque::Jobs::Locked
   end
 end
 
+class FailJob < ::Resque::Jobs::Locked
+  def self.perform_without_lock(sleep_time)
+    sleep sleep_time
+    raise "oh no"
+  end
+  def self.lock(*args)
+    "TestLock"
+  end
+end
+
 class ExecutionExpiresJob < ::Resque::Jobs::Locked
   def self.perform_without_lock(sleep_time)
     sleep sleep_time
