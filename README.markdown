@@ -15,11 +15,11 @@ the class level.
 
 For example:
 
-class UpdateNetworkGraph < Resque::Jobs::Locked
-  def self.perform_without_lock(repo_id)
-    heavy_lifting
-  end
-end
+    class UpdateNetworkGraph < Resque::Jobs::Locked
+      def self.perform_without_lock(repo_id)
+        heavy_lifting
+      end
+    end
 
 While other UpdateNetworkGraph jobs will be placed on the queue, the Locked
 class will check Redis to see if any others are executing with the same
@@ -28,16 +28,16 @@ arguments before beginning. If another is executing the job will be aborted.
 If you want to define the key yourself you can override the `lock` class
 method in your subclass, e.g.
 
-class UpdateNetworkGraph < Resque::Jobs::Locked
-  # Run only one at a time, regardless of repo_id.
-  def self.lock(repo_id)
-    "network-graph"
-  end
+    class UpdateNetworkGraph < Resque::Jobs::Locked
+      # Run only one at a time, regardless of repo_id.
+      def self.lock(repo_id)
+        "network-graph"
+      end
 
-  def self.perform_without_lock(repo_id)
-    heavy_lifting
-  end
-end
+      def self.perform_without_lock(repo_id)
+        heavy_lifting
+      end
+    end
 
 The above modification will ensure only one job of class UpdateNetworkGraph is
 running at a time, regardless of the repo_id. Normally a job is locked using a
@@ -51,11 +51,11 @@ the job to try again when the lock is lifted, use a Retried job.
 
 For example:
 
-class UpdateNetworkGraph < Resque::Jobs::Retried
-  def self.perform_without_lock(repo_id)
-    heavy_lifting
-  end
-end
+    class UpdateNetworkGraph < Resque::Jobs::Retried
+      def self.perform_without_lock(repo_id)
+        heavy_lifting
+      end
+    end
 
 Retried jobs are also Locked jobs, so all of the same tricks apply.
 
