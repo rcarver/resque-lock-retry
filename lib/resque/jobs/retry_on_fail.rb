@@ -15,7 +15,7 @@ module Resque
       # your own `perform_without_lock` class level method.
       def perform(*args)
         begin
-          super
+          perform_internal(*args)
         rescue Exception => ex
           try_again(*args) if retried_exceptions.any? { |e| ex.is_a?(e) }
           raise

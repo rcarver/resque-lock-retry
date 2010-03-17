@@ -13,7 +13,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
       thread.join
       assert(false, "Should have raised an exception")
     rescue StandardError => e
-      assert_equal(FooError, e.class)
+      assert_equal(FooError, e.class, e.message)
     end
     assert_equal(1, Resque.redis.llen("queue:testqueue").to_i, "job is enqueued")
   end
@@ -25,7 +25,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
       thread.join
       assert(false, "Should have raised an exception")
     rescue StandardError => e
-      assert_equal(BarError, e.class)
+      assert_equal(BarError, e.class, e.message)
     end
     assert_equal(1, Resque.redis.llen("queue:testqueue").to_i, "job is enqueued")
   end
@@ -37,7 +37,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
       thread.join
       assert(false, "Should have raised an exception")
     rescue StandardError => e
-      assert_equal(ExtraFooError, e.class)
+      assert_equal(ExtraFooError, e.class, e.message)
     end
     assert_equal(1, Resque.redis.llen("queue:testqueue").to_i, "job is enqueued")
   end
@@ -49,7 +49,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
       thread.join
       assert(false, "Should have raised an exception")
     rescue StandardError => e
-      assert_equal(StandardError, e.class)
+      assert_equal(StandardError, e.class, e.message)
     end
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "job is NOT enqueued")
   end

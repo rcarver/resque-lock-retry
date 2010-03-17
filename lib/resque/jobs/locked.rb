@@ -37,35 +37,35 @@ module Resque
     # UpdateNetworkGraph is running at a time, regardless of the repo_id.
     # Normally a job is locked using a combination of its class name and
     # arguments.
-    class Locked
+    module Locked
 
       # Convenience method to determine if a lock exists for this job, not
       # used internally.
-      def self.locked?(*args)
+      def locked?(*args)
         Resque.redis.exists "locked:#{lock(*args)}"
       end
 
       # Override in your subclass to control the lock key. It is passed the
       # same arguments as `perform_without_lock`, that is, your job's payload.
-      def self.lock(*args)
+      def lock(*args)
         "#{name}-#{args.to_s}"
       end
 
       # Override in your subclass to control how long the lock exists. Under
       # normal circumstances, the lock will be removed when the job ends. If
       # this doesn't happen, the lock will be removed after this many seconds.
-      def self.lock_time
+      def lock_time
         60
       end
 
       # Do not override - this is where the magic happens. Instead provide
       # your own `perform_without_lock` class level method.
-      def self.perform(*args)
-        with_lock(*args) { perform_without_lock(*args) }
+      def perform(*args)
+        with_lock(*args) { perform_internal(*args) }
       end
 
       # Locking algorithm: http://code.google.com/p/redis/wiki/SetnxCommand
-      def self.with_lock(*args)
+      def with_lock(*args)
         now = Time.now.to_i
         lock_key = "locked:#{lock(*args)}"
         lock_for = now + lock_time + 1

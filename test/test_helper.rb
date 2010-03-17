@@ -46,14 +46,16 @@ Resque.redis = 'localhost:9736'
 # Job classes for testing
 #
 
-class SelfLockJob < ::Resque::Jobs::Locked
-  def self.perform_without_lock(sleep_time)
+class SelfLockJob
+  extend ::Resque::Jobs::Locked
+  def self.perform_internal(sleep_time)
     sleep sleep_time
   end
 end
 
-class LockedJob < ::Resque::Jobs::Locked
-  def self.perform_without_lock(sleep_time)
+class LockedJob
+  extend ::Resque::Jobs::Locked
+  def self.perform_internal(sleep_time)
     sleep sleep_time
   end
   def self.lock(*args)
@@ -61,8 +63,9 @@ class LockedJob < ::Resque::Jobs::Locked
   end
 end
 
-class FailJob < ::Resque::Jobs::Locked
-  def self.perform_without_lock(sleep_time)
+class FailJob
+  extend ::Resque::Jobs::Locked
+  def self.perform_internal(sleep_time)
     sleep sleep_time
     raise "oh no"
   end
@@ -71,8 +74,9 @@ class FailJob < ::Resque::Jobs::Locked
   end
 end
 
-class ExecutionExpiresJob < ::Resque::Jobs::Locked
-  def self.perform_without_lock(sleep_time)
+class ExecutionExpiresJob
+  extend ::Resque::Jobs::Locked
+  def self.perform_internal(sleep_time)
     sleep sleep_time
   end
   def self.lock(*args)
@@ -83,10 +87,11 @@ class ExecutionExpiresJob < ::Resque::Jobs::Locked
   end
 end
 
-class RetriedOnLockJob < ::Resque::Jobs::Locked
+class RetriedOnLockJob
+  extend ::Resque::Jobs::Locked
   extend ::Resque::Jobs::RetryOnLock
   @queue = :testqueue
-  def self.perform_without_lock(sleep_time)
+  def self.perform_internal(sleep_time)
     sleep sleep_time
   end
   def self.lock(*args)
@@ -98,10 +103,10 @@ FooError = Class.new(StandardError)
 ExtraFooError = Class.new(FooError)
 BarError = Class.new(StandardError)
 
-class RetriedOnFailJob < ::Resque::Jobs::Locked
+class RetriedOnFailJob
   extend ::Resque::Jobs::RetryOnFail
   @queue = :testqueue
-  def self.perform_without_lock(sleep_time, ex)
+  def self.perform_internal(sleep_time, ex)
     sleep sleep_time
     raise ex
   end
@@ -113,11 +118,12 @@ class RetriedOnFailJob < ::Resque::Jobs::Locked
   end
 end
 
-class RetriedOnLockAndFail < ::Resque::Jobs::Locked
+class RetriedOnLockAndFail
+  extend ::Resque::Jobs::Locked
   extend ::Resque::Jobs::RetryOnLock
   extend ::Resque::Jobs::RetryOnFail
   @queue = :testqueue
-  def self.perform_without_lock(sleep_time, ex)
+  def self.perform_internal(sleep_time, ex)
     sleep sleep_time
     raise ex
   end
