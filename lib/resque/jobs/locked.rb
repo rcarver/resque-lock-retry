@@ -1,21 +1,67 @@
 module Resque
   module Jobs
+
+    # If you want only one instance of your job running at a time, inherit
+    # from this class and define a `perform_without_lock` method (as opposed
+    # to `perform`) at the class level.
+    #
+    # For example:
+    #
+    # class UpdateNetworkGraph < Resque::Jobs::Locked
+    #   def self.perform_without_lock(repo_id)
+    #     heavy_lifting
+    #   end
+    # end
+    #
+    # While other UpdateNetworkGraph jobs will be placed on the queue, the
+    # Locked class will check Redis to see if any others are executing with
+    # the same arguments before beginning. If another is executing the job
+    # will be aborted.
+    #
+    # If you want to define the key yourself you can override the `lock` class
+    # method in your subclass, e.g.
+    #
+    # class UpdateNetworkGraph < Resque::Jobs::Locked
+    #   # Run only one at a time, regardless of repo_id.
+    #   def self.lock(repo_id)
+    #     "network-graph"
+    #   end
+    #
+    #   def self.perform_without_lock(repo_id)
+    #     heavy_lifting
+    #   end
+    # end
+    #
+    #
+    # The above modification will ensure only one job of class
+    # UpdateNetworkGraph is running at a time, regardless of the repo_id.
+    # Normally a job is locked using a combination of its class name and
+    # arguments.
     class Locked
 
+      # Convenience method to determine if a lock exists for this job, not
+      # used internally.
       def self.locked?(*args)
         Resque.redis.exists "locked:#{lock(*args)}"
       end
 
-      def self.perform(*args)
-        with_lock(*args) { perform_without_lock(*args) }
-      end
-
+      # Override in your subclass to control the lock key. It is passed the
+      # same arguments as `perform_without_lock`, that is, your job's payload.
       def self.lock(*args)
         "#{name}-#{args.to_s}"
       end
 
+      # Override in your subclass to control how long the lock exists. Under
+      # normal circumstances, the lock will be removed when the job ends. If
+      # this doesn't happen, the lock will be removed after this many seconds.
       def self.lock_time
         60
+      end
+
+      # Do not override - this is where the magic happens. Instead provide
+      # your own `perform_without_lock` class level method.
+      def self.perform(*args)
+        with_lock(*args) { perform_without_lock(*args) }
       end
 
       # Locking algorithm: http://code.google.com/p/redis/wiki/SetnxCommand
