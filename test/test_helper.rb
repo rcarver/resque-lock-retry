@@ -83,7 +83,8 @@ class ExecutionExpiresJob < ::Resque::Jobs::Locked
   end
 end
 
-class RetriedJob < ::Resque::Jobs::Retried
+class RetriedOnLockJob < ::Resque::Jobs::Locked
+  extend ::Resque::Jobs::RetryOnLock
   @queue = :testqueue
   def self.perform_without_lock(sleep_time)
     sleep sleep_time

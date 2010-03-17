@@ -47,17 +47,19 @@ Retried jobs
 ------------
 
 Normally, locked jobs simply abort when a lock is encountered. If you'd like
-the job to try again when the lock is lifted, use a Retried job.
+the job to try again when the lock is lifted, extend RetryOnLock.
 
 For example:
 
-    class UpdateNetworkGraph < Resque::Jobs::Retried
+    class UpdateNetworkGraph < Resque::Jobs::Locked
+      extend Resque::Jobs::RetryOnLock
       def self.perform_without_lock(repo_id)
         heavy_lifting
       end
     end
 
-Retried jobs are also Locked jobs, so all of the same tricks apply.
+Now, if the job encounters a lock, the job will be requeued to try again after
+a short delay.
 
 
 Contributing
