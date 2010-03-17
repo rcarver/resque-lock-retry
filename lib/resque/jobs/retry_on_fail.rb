@@ -10,7 +10,7 @@ module Resque
       # Convenience method to test whether your class will retry on a given
       # exception type.
       def retried_on_exception?(ex)
-        retried_exceptions.any? { |e| ex.is_a?(e) }
+        !! retried_exceptions.any? { |e| e >= ex }
       end
 
       # Override in your subclass to control how long to wait before
@@ -27,7 +27,7 @@ module Resque
         begin
           super
         rescue Exception => ex
-          try_again(*args) if retried_on_exception?(ex)
+          try_again(*args) if retried_on_exception?(ex.class)
           raise
         end
       end
