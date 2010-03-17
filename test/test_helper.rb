@@ -88,7 +88,6 @@ class ExecutionExpiresJob
 end
 
 class RetriedOnLockJob
-  extend ::Resque::Jobs::Locked
   extend ::Resque::Jobs::RetryOnLock
   @queue = :testqueue
   def self.perform_internal(sleep_time)
@@ -118,8 +117,7 @@ class RetriedOnFailJob
   end
 end
 
-class RetriedOnLockAndFail
-  extend ::Resque::Jobs::Locked
+class RetriedOnLockAndFailJob
   extend ::Resque::Jobs::RetryOnLock
   extend ::Resque::Jobs::RetryOnFail
   @queue = :testqueue

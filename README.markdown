@@ -10,13 +10,13 @@ Locked jobs
 ------------
 
 If you want only one instance of your job running at a time, inherit from this
-class and define a `perform_without_lock` method (as opposed to `perform`) at
+class and define a `perform_internal` method (as opposed to `perform`) at
 the class level.
 
 For example:
 
     class UpdateNetworkGraph < Resque::Jobs::Locked
-      def self.perform_without_lock(repo_id)
+      def self.perform_internal(repo_id)
         heavy_lifting
       end
     end
@@ -34,7 +34,7 @@ method in your subclass, e.g.
         "network-graph"
       end
 
-      def self.perform_without_lock(repo_id)
+      def self.perform_internal(repo_id)
         heavy_lifting
       end
     end
@@ -53,7 +53,7 @@ For example:
 
     class UpdateNetworkGraph < Resque::Jobs::Locked
       extend Resque::Jobs::RetryOnLock
-      def self.perform_without_lock(repo_id)
+      def self.perform_internal(repo_id)
         heavy_lifting
       end
     end

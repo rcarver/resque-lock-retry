@@ -12,10 +12,10 @@ module Resque
       end
 
       # Do not override - this is where the magic happens. Instead provide
-      # your own `perform_without_lock` class level method.
+      # your own `perform_internal` class level method.
       def perform(*args)
         begin
-          perform_internal(*args)
+          super
         rescue Exception => ex
           try_again(*args) if retried_exceptions.any? { |e| ex.is_a?(e) }
           raise

@@ -2,13 +2,13 @@ module Resque
   module Jobs
 
     # If you want only one instance of your job running at a time, inherit
-    # from this class and define a `perform_without_lock` method (as opposed
+    # from this class and define a `perform_internal` method (as opposed
     # to `perform`) at the class level.
     #
     # For example:
     #
     # class UpdateNetworkGraph < Resque::Jobs::Locked
-    #   def self.perform_without_lock(repo_id)
+    #   def self.perform_internal(repo_id)
     #     heavy_lifting
     #   end
     # end
@@ -27,7 +27,7 @@ module Resque
     #     "network-graph"
     #   end
     #
-    #   def self.perform_without_lock(repo_id)
+    #   def self.perform_internal(repo_id)
     #     heavy_lifting
     #   end
     # end
@@ -38,6 +38,7 @@ module Resque
     # Normally a job is locked using a combination of its class name and
     # arguments.
     module Locked
+      include PerformInternal
 
       # Convenience method to determine if a lock exists for this job, not
       # used internally.
@@ -46,7 +47,7 @@ module Resque
       end
 
       # Override in your subclass to control the lock key. It is passed the
-      # same arguments as `perform_without_lock`, that is, your job's payload.
+      # same arguments as `perform_internal`, that is, your job's payload.
       def lock(*args)
         "#{name}-#{args.to_s}"
       end
@@ -59,9 +60,9 @@ module Resque
       end
 
       # Do not override - this is where the magic happens. Instead provide
-      # your own `perform_without_lock` class level method.
+      # your own `perform_internal` class level method.
       def perform(*args)
-        with_lock(*args) { perform_internal(*args) }
+        with_lock(*args) { super }
       end
 
       # Locking algorithm: http://code.google.com/p/redis/wiki/SetnxCommand

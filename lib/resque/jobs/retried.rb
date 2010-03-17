@@ -1,6 +1,7 @@
 module Resque
   module Jobs
     module Retried
+      include PerformInternal
 
       # Override in your subclass to control how long to wait before
       # re-queueing the job when a lock is encountered. Note that the job will
