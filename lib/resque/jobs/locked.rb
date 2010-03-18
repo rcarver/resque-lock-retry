@@ -89,6 +89,9 @@ module Resque
             Resque.redis.del(lock_key)
           end
         else
+          if respond_to?(:on_lock)
+            on_lock(*args)
+          end
           return false
         end
       end
