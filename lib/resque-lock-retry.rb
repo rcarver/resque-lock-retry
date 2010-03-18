@@ -1,5 +1,5 @@
 require 'resque'
-require 'resque/jobs/perform_internal'
+require 'resque/job_callbacks'
 require 'resque/jobs/locked'
 require 'resque/jobs/retried'
 require 'resque/jobs/retry_on_lock'
