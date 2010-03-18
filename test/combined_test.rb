@@ -7,7 +7,7 @@ class Resque::CombinedTest < Test::Unit::TestCase
   end
 
   def test_lock_on_fail_with_lock_on_retry
-    thread = Thread.new { RetriedOnLockAndFailJob.perform 1, FooError }
+    thread = Thread.new { perform_job RetriedOnLockAndFailJob, 1, FooError }
     assert_equal(true, Resque.redis.exists("locked:TestLock"), "job set the lock")
     begin
       thread.join
