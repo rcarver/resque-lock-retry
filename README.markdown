@@ -9,15 +9,14 @@ ignored or retried.
 Locked jobs
 ------------
 
-If you want only one instance of your job running at a time, inherit from this
-class and define a `perform_internal` method (as opposed to `perform`) at
-the class level.
+If you want only one instance of your job running at a time, extend
+Resque::Jobs::Locked.
 
 For example:
 
     class UpdateNetworkGraph
       extend Resque::Jobs::Locked
-      def self.perform_internal(repo_id)
+      def self.perform(repo_id)
         heavy_lifting
       end
     end
@@ -29,13 +28,13 @@ arguments before beginning. If another is executing the job will be aborted.
 If you want to define the key yourself you can override the `lock` class
 method in your subclass, e.g.
 
-    class UpdateNetworkGraph < Resque::Jobs::Locked
+    class UpdateNetworkGraph
+      extend Resque::Jobs::Locked
       # Run only one at a time, regardless of repo_id.
       def self.lock(repo_id)
         "network-graph"
       end
-
-      def self.perform_internal(repo_id)
+      def self.perform(repo_id)
         heavy_lifting
       end
     end
@@ -56,7 +55,7 @@ For example:
 
     class UpdateNetworkGraph
       extend Resque::Jobs::RetryOnLock
-      def self.perform_internal(repo_id)
+      def self.perform(repo_id)
         heavy_lifting
       end
     end
@@ -73,7 +72,7 @@ For example:
 
     class UpdateNetworkGraph
       extend Resque::Jobs::RetryOnFail
-      def self.perform_internal(repo_id)
+      def self.perform(repo_id)
         heavy_lifting
       end
       def self.retried_exceptions
