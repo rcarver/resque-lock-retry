@@ -7,7 +7,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
   end
 
   def test_job_enqueues_if_failed_and_exception_allows_retry
-    thread = Thread.new { RetriedOnFailJob.perform 1, FooError }
+    thread = Thread.new { perform_job RetriedOnFailJob, 1, FooError }
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
     begin
       thread.join
@@ -19,7 +19,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
   end
 
   def test_job_enqueues_if_failed_and_other_exception_allows_retry
-    thread = Thread.new { RetriedOnFailJob.perform 1, BarError }
+    thread = Thread.new { perform_job RetriedOnFailJob, 1, BarError }
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
     begin
       thread.join
@@ -31,7 +31,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
   end
 
   def test_job_enqueues_if_failed_and_exception_superclass_allows_retry
-    thread = Thread.new { RetriedOnFailJob.perform 1, ExtraFooError }
+    thread = Thread.new { perform_job RetriedOnFailJob, 1, ExtraFooError }
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
     begin
       thread.join
@@ -43,7 +43,7 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
   end
 
   def test_job_does_not_enqueues_if_failed_and_exception_does_not_allow_retry
-    thread = Thread.new { RetriedOnFailJob.perform 1, StandardError }
+    thread = Thread.new { perform_job RetriedOnFailJob, 1, StandardError }
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
     begin
       thread.join

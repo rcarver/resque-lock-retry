@@ -23,13 +23,8 @@ module Resque
 
       # Do not override - this is where the magic happens. Instead provide
       # your own `perform_internal` class level method.
-      def perform(*args)
-        begin
-          super
-        rescue Exception => ex
-          try_again(*args) if retried_on_exception?(ex.class)
-          raise
-        end
+      def on_failure(e, *args)
+        try_again(*args) if retried_on_exception?(e.class)
       end
 
     end
