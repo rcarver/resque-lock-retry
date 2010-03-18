@@ -38,7 +38,6 @@ module Resque
     # Normally a job is locked using a combination of its class name and
     # arguments.
     module Locked
-      include PerformInternal
 
       # Convenience method to determine if a lock exists for this job, not
       # used internally.
@@ -59,14 +58,8 @@ module Resque
         60
       end
 
-      # Do not override - this is where the magic happens. Instead provide
-      # your own `perform_internal` class level method.
-      def perform(*args)
-        with_lock(*args) { super }
-      end
-
       # Locking algorithm: http://code.google.com/p/redis/wiki/SetnxCommand
-      def with_lock(*args)
+      def around_perform(*args)
         now = Time.now.to_i
         lock_key = "locked:#{lock(*args)}"
         lock_for = now + lock_time + 1
@@ -99,7 +92,6 @@ module Resque
           return false
         end
       end
-
     end
 
   end

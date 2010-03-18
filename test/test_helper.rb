@@ -41,6 +41,16 @@ puts "Starting redis for testing at localhost:9736..."
 `redis-server #{dir}/redis-test.conf`
 Resque.redis = 'localhost:9736'
 
+#
+# Test helpers
+#
+
+class Test::Unit::TestCase
+  def perform_job(klass, *args)
+    resque_job = Resque::Job.new(:testqueue, 'class' => klass, 'args' => args)
+    resque_job.perform
+  end
+end
 
 #
 # Job classes for testing
@@ -48,14 +58,14 @@ Resque.redis = 'localhost:9736'
 
 class SelfLockJob
   extend ::Resque::Jobs::Locked
-  def self.perform_internal(sleep_time)
+  def self.perform(sleep_time)
     sleep sleep_time
   end
 end
 
 class LockedJob
   extend ::Resque::Jobs::Locked
-  def self.perform_internal(sleep_time)
+  def self.perform(sleep_time)
     sleep sleep_time
   end
   def self.lock(*args)
@@ -65,7 +75,7 @@ end
 
 class FailJob
   extend ::Resque::Jobs::Locked
-  def self.perform_internal(sleep_time)
+  def self.perform(sleep_time)
     sleep sleep_time
     raise "oh no"
   end
@@ -76,7 +86,7 @@ end
 
 class ExecutionExpiresJob
   extend ::Resque::Jobs::Locked
-  def self.perform_internal(sleep_time)
+  def self.perform(sleep_time)
     sleep sleep_time
   end
   def self.lock(*args)
@@ -90,7 +100,7 @@ end
 class RetriedOnLockJob
   extend ::Resque::Jobs::RetryOnLock
   @queue = :testqueue
-  def self.perform_internal(sleep_time)
+  def self.perform(sleep_time)
     sleep sleep_time
   end
   def self.lock(*args)
@@ -105,7 +115,7 @@ BarError = Class.new(StandardError)
 class RetriedOnFailJob
   extend ::Resque::Jobs::RetryOnFail
   @queue = :testqueue
-  def self.perform_internal(sleep_time, ex)
+  def self.perform(sleep_time, ex)
     sleep sleep_time
     raise ex
   end
@@ -121,7 +131,7 @@ class RetriedOnLockAndFailJob
   extend ::Resque::Jobs::RetryOnLock
   extend ::Resque::Jobs::RetryOnFail
   @queue = :testqueue
-  def self.perform_internal(sleep_time, ex)
+  def self.perform(sleep_time, ex)
     sleep sleep_time
     raise ex
   end
