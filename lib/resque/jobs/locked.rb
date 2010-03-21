@@ -85,15 +85,11 @@ module Resque
         if lock_acquired
           begin
             yield
-            return true
           ensure
             Resque.redis.del(lock_key)
           end
         else
-          if respond_to?(:on_lock)
-            on_lock(*args)
-          end
-          return false
+          on_lock(*args) if respond_to?(:on_lock)
         end
       end
     end

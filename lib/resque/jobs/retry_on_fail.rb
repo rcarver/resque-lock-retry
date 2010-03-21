@@ -21,8 +21,7 @@ module Resque
         []
       end
 
-      # Do not override - this is where the magic happens. Instead provide
-      # your own `perform_internal` class level method.
+      # Use resque's failure callback.
       def on_failure(e, *args)
         try_again(*args) if retried_on_exception?(e.class)
       end
