@@ -21,7 +21,7 @@ module Resque
         []
       end
 
-      # Use resque's failure callback.
+      # Use resque's failure hook.
       def on_failure(e, *args)
         try_again(*args) if retried_on_exception?(e.class)
       end

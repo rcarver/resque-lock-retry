@@ -7,7 +7,7 @@ module Resque
       include Locked
       include Retried
 
-      # Use Locked's lock callback.
+      # Use Locked's lock hook.
       def on_lock(*args)
         try_again(*args)
       end
