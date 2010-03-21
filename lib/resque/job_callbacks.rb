@@ -1,23 +1,33 @@
 module Resque
+
+  DontPerform = Class.new(StandardError)
+
   class Job
+
     def perform
       job_args = args || []
-
-      # Execute before_perform hook and abort if it returns false
-      if payload_class.respond_to?(:before_perform)
-        result = payload_class.before_perform(*job_args)
-        return false if result == false
-      end
+      job_was_performed = false
 
       begin
+        # Execute before_perform hook. Abort the job gracefully if
+        # Resque::DontPerform is raised.
+        begin
+          if payload_class.respond_to?(:before_perform)
+            payload_class.before_perform(*job_args)
+          end
+        rescue DontPerform
+          return false
+        end
+
         # Execute the job. Do it in an around_perform hook if available.
         if payload_class.respond_to?(:around_perform)
-          result = payload_class.around_perform(*job_args) do
+          payload_class.around_perform(*job_args) do
             payload_class.perform(*job_args)
+            job_was_performed = true
           end
         else
-          result = true
           payload_class.perform(*job_args)
+          job_was_performed = true
         end
 
         # Execute after_perform hook
@@ -25,11 +35,12 @@ module Resque
           payload_class.after_perform(*job_args)
         end
 
-        # Return true unless the around_perform hook returned false
-        return result
+        # Return true if the job was performed
+        return job_was_performed
+
+      # If an exception occurs during the job execution, look for an
+      # on_failure hook then re-raise.
       rescue Object => e
-        # If an exception occurs during the job execution, look for an
-        # on_failure hook then re-raise.
         if payload_class.respond_to?(:on_failure)
           payload_class.on_failure(e, *job_args)
         end
