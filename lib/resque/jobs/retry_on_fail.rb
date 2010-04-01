@@ -22,7 +22,7 @@ module Resque
       end
 
       # Use resque's failure hook.
-      def on_failure(e, *args)
+      def on_failure_retry_on_fail(e, *args)
         try_again(*args) if retried_on_exception?(e.class)
       end
 

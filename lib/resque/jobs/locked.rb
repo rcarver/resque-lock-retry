@@ -60,7 +60,7 @@ module Resque
       end
 
       # Locking algorithm: http://code.google.com/p/redis/wiki/SetnxCommand
-      def around_perform(*args)
+      def around_perform_lock(*args)
         now = Time.now.to_i
         lock_key = "locked:#{lock(*args)}"
         lock_for = now + lock_time + 1
