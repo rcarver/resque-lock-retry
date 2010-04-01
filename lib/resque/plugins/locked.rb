@@ -1,5 +1,5 @@
 module Resque
-  module Jobs
+  module Plugins
 
     # If you want only one instance of your job running at a time, extend
     # this module.
@@ -7,7 +7,7 @@ module Resque
     # For example:
     #
     # class UpdateNetworkGraph
-    #   extend Resque::Jobs::Locked
+    #   extend Resque::Plugins::Locked
     #   def self.perform(repo_id)
     #     heavy_lifting
     #   end
@@ -22,7 +22,7 @@ module Resque
     # method in your subclass, e.g.
     #
     # class UpdateNetworkGraph
-    #   extend Resque::Jobs::Locked
+    #   extend Resque::Plugins::Locked
     #   # Run only one at a time, regardless of repo_id.
     #   def self.lock(repo_id)
     #     "network-graph"

@@ -1,5 +1,5 @@
 module Resque
-  module Jobs
+  module Plugins
     module Retried
 
       # Override in your subclass to control how long to wait before

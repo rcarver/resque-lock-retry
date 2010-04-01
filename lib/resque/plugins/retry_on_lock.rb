@@ -1,5 +1,5 @@
 module Resque
-  module Jobs
+  module Plugins
 
     # If you want your job to retry when a lock is encountered, just extend
     # this module.

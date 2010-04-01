@@ -12,12 +12,12 @@ Locked jobs
 ------------
 
 If you want only one instance of your job running at a time, extend
-Resque::Jobs::Locked.
+Resque::Plugins::Locked.
 
 For example:
 
     class UpdateNetworkGraph
-      extend Resque::Jobs::Locked
+      extend Resque::Plugins::Locked
       def self.perform(repo_id)
         heavy_lifting
       end
@@ -31,7 +31,7 @@ If you want to define the key yourself you can override the `lock` class
 method in your subclass, e.g.
 
     class UpdateNetworkGraph
-      extend Resque::Jobs::Locked
+      extend Resque::Plugins::Locked
       # Run only one at a time, regardless of repo_id.
       def self.lock(repo_id)
         "network-graph"
@@ -56,7 +56,7 @@ the job to try again when the lock is lifted, extend RetryOnLock.
 For example:
 
     class UpdateNetworkGraph
-      extend Resque::Jobs::RetryOnLock
+      extend Resque::Plugins::RetryOnLock
       def self.perform(repo_id)
         heavy_lifting
       end
@@ -73,7 +73,7 @@ Then, define the types of exceptions that are ok to retry on.
 For example:
 
     class UpdateNetworkGraph
-      extend Resque::Jobs::RetryOnFail
+      extend Resque::Plugins::RetryOnFail
       def self.perform(repo_id)
         heavy_lifting
       end
@@ -90,8 +90,8 @@ job, it will be required after a short delay.
 Retries may be combined. For example:
 
     class UpdateNetworkGraph
-      extend Resque::Jobs::RetryOnLock
-      extend Resque::Jobs::RetryOnFail
+      extend Resque::Plugins::RetryOnLock
+      extend Resque::Plugins::RetryOnFail
       ...
     end
 

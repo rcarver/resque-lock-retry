@@ -57,14 +57,14 @@ end
 #
 
 class SelfLockJob
-  extend ::Resque::Jobs::Locked
+  extend ::Resque::Plugins::Locked
   def self.perform(sleep_time)
     sleep sleep_time
   end
 end
 
 class LockedJob
-  extend ::Resque::Jobs::Locked
+  extend ::Resque::Plugins::Locked
   def self.perform(sleep_time)
     sleep sleep_time
   end
@@ -74,7 +74,7 @@ class LockedJob
 end
 
 class FailJob
-  extend ::Resque::Jobs::Locked
+  extend ::Resque::Plugins::Locked
   def self.perform(sleep_time)
     sleep sleep_time
     raise "oh no"
@@ -85,7 +85,7 @@ class FailJob
 end
 
 class ExecutionExpiresJob
-  extend ::Resque::Jobs::Locked
+  extend ::Resque::Plugins::Locked
   def self.perform(sleep_time)
     sleep sleep_time
   end
@@ -98,7 +98,7 @@ class ExecutionExpiresJob
 end
 
 class RetriedOnLockJob
-  extend ::Resque::Jobs::RetryOnLock
+  extend ::Resque::Plugins::RetryOnLock
   @queue = :testqueue
   def self.perform(sleep_time)
     sleep sleep_time
@@ -113,7 +113,7 @@ ExtraFooError = Class.new(FooError)
 BarError = Class.new(StandardError)
 
 class RetriedOnFailJob
-  extend ::Resque::Jobs::RetryOnFail
+  extend ::Resque::Plugins::RetryOnFail
   @queue = :testqueue
   def self.perform(sleep_time, ex)
     sleep sleep_time
@@ -128,8 +128,8 @@ class RetriedOnFailJob
 end
 
 class RetriedOnLockAndFailJob
-  extend ::Resque::Jobs::RetryOnLock
-  extend ::Resque::Jobs::RetryOnFail
+  extend ::Resque::Plugins::RetryOnLock
+  extend ::Resque::Plugins::RetryOnFail
   @queue = :testqueue
   def self.perform(sleep_time, ex)
     sleep sleep_time
