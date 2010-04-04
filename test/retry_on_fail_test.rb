@@ -6,6 +6,12 @@ class Resque::RetriedOnFailJobTest < Test::Unit::TestCase
     Resque.redis.flush_all
   end
 
+  def test_lint
+    assert_nothing_raised do
+      Resque::Plugin.lint Resque::Plugins::RetryOnFail
+    end
+  end
+
   def test_job_enqueues_if_failed_and_exception_allows_retry
     thread = Thread.new { perform_job RetriedOnFailJob, 1, FooError }
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")

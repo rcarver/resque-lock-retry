@@ -6,6 +6,12 @@ class Resque::LockedJobTest < Test::Unit::TestCase
     Resque.redis.flush_all
   end
 
+  def test_lint
+    assert_nothing_raised do
+      Resque::Plugin.lint Resque::Plugins::Locked
+    end
+  end
+
   def test_job_locks_and_unlocks
     thread = Thread.new { perform_job LockedJob, 1 }
     assert_equal(true, Resque.redis.exists("locked:TestLock"), "job set the lock")
