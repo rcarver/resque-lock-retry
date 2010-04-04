@@ -1,15 +1,9 @@
-$LOAD_PATH.unshift 'lib'
+require 'rake/testtask'
 
 task :default => :test
 
-desc "Run tests"
-task :test do
-  # Don't use the rake/testtask because it loads a new
-  # Ruby interpreter - we want to run tests with the current
-  # `rake` so our library manager still works
-  Dir['test/*_test.rb'].each do |f|
-    require f
-  end
+Rake::TestTask.new do |t|
+  t.test_files = FileList['test/*.rb']
 end
 
 begin
@@ -20,6 +14,9 @@ begin
     gemspec.email = "ryan@typekit.com"
     gemspec.homepage = "http://github.com/rcarver/resque-lock-retry"
     gemspec.authors = ["Ryan Carver"]
+
+    gemspec.add_dependency "resque", ">=0.7.1"
+    gemspec.add_development_dependency "jeweler"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

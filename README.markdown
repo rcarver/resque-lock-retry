@@ -1,7 +1,7 @@
 resque-lock-retry
 =================
 
-A Resque plugin. Requires Resque 1.7.0.
+A Resque plugin. Requires Resque 1.7.1.
 
 Resque-lock-retry is an extension to
 [Resque](http://github.com/defunkt/resque) that adds support for ensuring that
