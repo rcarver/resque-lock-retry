@@ -8,11 +8,15 @@ Resque-lock-retry is an extension to
 only one job runs at a time. In the case of locking conflicts, the job may be
 ignored or retried.
 
+This plugin works best in combination with
+[resque-scheduler](http://github.com/bvandenbos/resque-scheduler), but it 
+isn't required.
+
 Locked jobs
 ------------
 
 If you want only one instance of your job running at a time, extend
-Resque::Plugins::Locked.
+`Resque::Plugins::Locked`.
 
 For example:
 
@@ -23,8 +27,8 @@ For example:
       end
     end
 
-While other UpdateNetworkGraph jobs will be placed on the queue, the Locked
-class will check Redis to see if any others are executing with the same
+While other UpdateNetworkGraph jobs will be placed on the queue, the `Locked`
+class will check `Redis` to see if any others are executing with the same
 arguments before beginning. If another is executing the job will be aborted.
 
 If you want to define the key yourself you can override the `lock` class
@@ -41,9 +45,9 @@ method in your subclass, e.g.
       end
     end
 
-The above modification will ensure only one job of class UpdateNetworkGraph is
-running at a time, regardless of the repo_id. Normally a job is locked using a
-combination of its class name and arguments.
+The above modification will ensure only one job of class `UpdateNetworkGraph`
+is running at a time, regardless of the `repo_id`. Normally a job is locked
+using a combination of its class name and arguments.
 
 Retried jobs
 ------------
@@ -51,7 +55,7 @@ Retried jobs
 ### Locks
 
 Normally, locked jobs simply abort when a lock is encountered. If you'd like
-the job to try again when the lock is lifted, extend RetryOnLock.
+the job to try again when the lock is lifted, extend `RetryOnLock`.
 
 For example:
 
@@ -67,7 +71,7 @@ a short delay.
 
 ### Failures
 
-If you'd like to retry jobs when certain exceptions happen, use RetryOnFail.
+If you'd like to retry jobs when certain exceptions happen, use `RetryOnFail`.
 Then, define the types of exceptions that are ok to retry on.
 
 For example:
@@ -82,20 +86,21 @@ For example:
       end
     end
 
-Now, if a NetworkError (or subclass) exception is thrown while performing the
-job, it will be required after a short delay.
+Now, if a `NetworkError` (or subclass) exception is thrown while performing
+the job, it will be required after a short delay.
 
 ### Retry strategies
 
 Retrying comes in two flavors:
 
-1. [`ResqueScheduler`](http://github.com/bvandenbos/resque-scheduler)
-If Resque responds to :enqueue_in, the job will be scheduled to
-perform again in the 5 seconds.
+1. [resque-scheduler](http://github.com/bvandenbos/resque-scheduler) If
+Resque responds to `enqueue_in`, the job will be scheduled to perform again in
+the 5 seconds.
 
 2. `sleep` If Resque does not respond to `enqueue_in`, then we simply sleep
-for 1 second before enqueing the job. This method is NOT recommended because it will block your worker.
-   
+for 1 second before enqueing the job. This method is NOT recommended because
+it will block your worker.
+
 To change how long to wait until the job is retried, just override
 `seconds_until_retry`
 
