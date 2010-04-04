@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{resque-lock-retry}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ryan Carver"]
-  s.date = %q{2010-03-17}
+  s.date = %q{2010-04-04}
   s.email = %q{ryan@typekit.com}
   s.extra_rdoc_files = [
     "README.markdown"
@@ -20,15 +20,16 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/resque-lock-retry.rb",
-     "lib/resque/jobs/locked.rb",
-     "lib/resque/jobs/perform_internal.rb",
-     "lib/resque/jobs/retried.rb",
-     "lib/resque/jobs/retry_on_fail.rb",
-     "lib/resque/jobs/retry_on_lock.rb",
+     "lib/resque/plugins/locked.rb",
+     "lib/resque/plugins/retried.rb",
+     "lib/resque/plugins/retry_on_fail.rb",
+     "lib/resque/plugins/retry_on_lock.rb",
      "resque-lock-retry.gemspec",
      "test/combined_test.rb",
      "test/locked_test.rb",
      "test/redis-test.conf",
+     "test/retried_test.rb",
+     "test/retried_test_with_scheduler.rb",
      "test/retry_on_fail_test.rb",
      "test/retry_on_lock_test.rb",
      "test/test_helper.rb"
@@ -41,6 +42,8 @@ Gem::Specification.new do |s|
   s.test_files = [
     "test/combined_test.rb",
      "test/locked_test.rb",
+     "test/retried_test.rb",
+     "test/retried_test_with_scheduler.rb",
      "test/retry_on_fail_test.rb",
      "test/retry_on_lock_test.rb",
      "test/test_helper.rb"
@@ -51,9 +54,15 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<resque>, [">= 0.7.1"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
+      s.add_dependency(%q<resque>, [">= 0.7.1"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
+    s.add_dependency(%q<resque>, [">= 0.7.1"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
   end
 end
 
