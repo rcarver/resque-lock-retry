@@ -5,12 +5,12 @@ module Resque
       # Override in your subclass to control how long to wait before
       # performing this job again. Retrying comes in two flavors:
       #
-      # 1. ResqueScheduler
-      #    If Resque responds to :enqueue_in, the job will be scheduled to
+      # 1. `ResqueScheduler`
+      #    If Resque responds to `enqueue_in`, the job will be scheduled to
       #    perform again in the defined number of seconds.
       #
-      # 2. Sleep
-      #    If Resque does not respond to :enqueue_in, then we simply sleep
+      # 2. `sleep`
+      #    If Resque does not respond to `enqueue_in`, then we simply sleep
       #    for the defined number of seconds before enqueing the job. This
       #    method is NOT recommended because it will block your worker.
       #

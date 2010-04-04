@@ -85,6 +85,30 @@ For example:
 Now, if a NetworkError (or subclass) exception is thrown while performing the
 job, it will be required after a short delay.
 
+### Retry strategies
+
+Retrying comes in two flavors:
+
+1. [`ResqueScheduler`](http://github.com/bvandenbos/resque-scheduler)
+If Resque responds to :enqueue_in, the job will be scheduled to
+perform again in the 5 seconds.
+
+2. `sleep` If Resque does not respond to `enqueue_in`, then we simply sleep
+for 1 second before enqueing the job. This method is NOT recommended because it will block your worker.
+   
+To change how long to wait until the job is retried, just override
+`seconds_until_retry`
+
+    class UpdateNetworkGraph
+      extend Resque::Plugins::RetryOnLock
+      def self.perform(repo_id)
+        heavy_lifting
+      end
+      def self.seconds_until_retry
+        100
+      end
+    end
+
 ### Bonus
 
 Retries may be combined. For example:
