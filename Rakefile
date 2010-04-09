@@ -2,15 +2,10 @@ require 'rake/testtask'
 
 task :default => :test
 
-def command?(command)
-  system("type #{command} > /dev/null")
-end
-
 desc "Run the test suite"
 task :test do
-  rg = command?(:rg)
   Dir['test/**/*_test.rb'].each do |f|
-    rg ? sh("rg #{f}") : ruby(f)
+    ruby(f)
   end
 end
 
