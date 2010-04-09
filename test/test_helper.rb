@@ -127,6 +127,24 @@ class RetriedOnFailJob
   end
 end
 
+class RetriedOnFailWithDifferentArgsJob
+  extend ::Resque::Plugins::RetryOnFail
+  @queue = :testqueue
+  def self.perform(sleep_time, ex)
+    sleep sleep_time
+    raise ex
+  end
+  def self.args_for_try_again(sleep_time, ex)
+    [sleep_time + 1, ex]
+  end
+  def self.retried_exceptions
+    [FooError, BarError]
+  end
+  def self.lock(*args)
+    "TestLock"
+  end
+end
+
 class RetriedOnLockAndFailJob
   extend ::Resque::Plugins::RetryOnLock
   extend ::Resque::Plugins::RetryOnFail

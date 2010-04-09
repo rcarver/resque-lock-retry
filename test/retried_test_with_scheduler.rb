@@ -31,4 +31,16 @@ class Resque::RetriedJobWithResqueSchedulerTest < Test::Unit::TestCase
     assert_equal([5, RetriedOnFailJob, 0, FooError], Resque.last_enqueued_in)
   end
 
+  def test_job_args_can_be_modified
+    thread = Thread.new { perform_job RetriedOnFailWithDifferentArgsJob, 0, FooError }
+    assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
+    begin
+      thread.join
+      assert(false, "Should have raised an exception")
+    rescue StandardError => e
+      assert_equal(FooError, e.class, e.message)
+    end
+    assert_equal([5, RetriedOnFailWithDifferentArgsJob, 1, FooError], Resque.last_enqueued_in)
+  end
+
 end

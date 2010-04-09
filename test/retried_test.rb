@@ -75,4 +75,30 @@ class Resque::RetriedJobWithSleepTest < Test::Unit::TestCase
     assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "job is NOT enqueued")
   end
 
+  def test_job_args_are_maintained
+    thread = Thread.new { perform_job RetriedOnFailJob, 1, FooError }
+    assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
+    begin
+      thread.join
+      assert(false, "Should have raised an exception")
+    rescue StandardError => e
+      assert_equal(FooError, e.class, e.message)
+    end
+    assert job = Resque.pop(:testqueue)
+    assert_equal [1, "FooError"], job["args"]
+  end
+
+  def test_job_args_can_be_modified
+    thread = Thread.new { perform_job RetriedOnFailWithDifferentArgsJob, 1, FooError }
+    assert_equal(0, Resque.redis.llen("queue:testqueue").to_i, "queue is empty")
+    begin
+      thread.join
+      assert(false, "Should have raised an exception")
+    rescue StandardError => e
+      assert_equal(FooError, e.class, e.message)
+    end
+    assert job = Resque.pop(:testqueue)
+    assert_equal [2, "FooError"], job["args"]
+  end
+
 end

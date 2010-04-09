@@ -19,12 +19,18 @@ module Resque
         Resque.respond_to?(:enqueue_in) ? 5 : 1
       end
 
+      # Modify the arguments used to requeue the job. Use this to do something
+      # other than try the exact same job again.
+      def args_for_try_again(*args)
+        args
+      end
+
       def try_again(*args)
         if Resque.respond_to?(:enqueue_in)
-          Resque.enqueue_in(seconds_until_retry || 0, self, *args)
+          Resque.enqueue_in(seconds_until_retry || 0, self, *args_for_try_again(*args))
         else
           sleep(seconds_until_retry) if seconds_until_retry
-          Resque.enqueue(self, *args)
+          Resque.enqueue(self, *args_for_try_again(*args))
         end
       end
 
