@@ -12,7 +12,7 @@ end
 class Resque::RetriedJobWithResqueSchedulerTest < Test::Unit::TestCase
 
   def setup
-    Resque.redis.flush_all
+    Resque.redis.flushall
   end
 
   def test_default_seconds_until_retry

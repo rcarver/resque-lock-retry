@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/test_helper'
 class Resque::LockedJobTest < Test::Unit::TestCase
 
   def setup
-    Resque.redis.flush_all
+    Resque.redis.flushall
   end
 
   def test_lint

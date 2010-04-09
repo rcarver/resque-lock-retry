@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/test_helper'
 class Resque::CombinedTest < Test::Unit::TestCase
 
   def setup
-    Resque.redis.flush_all
+    Resque.redis.flushall
   end
 
   def test_lock_on_fail_with_lock_on_retry
