@@ -1,3 +1,9 @@
+# NOTE!
+
+This plugin has been replaced by [resque-retry](http://github.com/lantins/resque-retry) and [resque-lock-timeout](http://github.com/lantins/resque-lock-timeout)
+
+
+
 resque-lock-retry
 =================
 
